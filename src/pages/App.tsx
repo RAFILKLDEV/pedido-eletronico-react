@@ -11,6 +11,7 @@ export default function App() {
 
   // MODAL
   const [modal, setModal] = useState(false)
+  const [modalButtons, setModalButtons] = useState(true)
   const [modalAviso, setModalAviso] = useState({
     modal: false,
     produto: "",
@@ -178,7 +179,7 @@ export default function App() {
               Rua Monsenhor Abreu, 73 - Pari - São Paulo - SP - CEP: 03035-115</div>
             <div className="bg-gray-100 p-2 align-middle border-2 border-black border-t-0 font-semibold">
               ADM DE VENDAS  (11) 2612-6270  Whastapp (11) 98365-0691</div>
-            <div className="bg-gray-100 p-2 align-middle border-2 border-black border-t-0 border-b-0 text-red-700 font-semibold">
+            <div className="bg-gray-100 p-2 align-middle border-2 border-black border-t-0 border-b-0 text-red-700 font-bold">
               pedidos@dsabor.com.br ou pedidos@dadinhooriginal.com.br</div>
           </div>
         </div>
@@ -312,13 +313,18 @@ export default function App() {
 
         {/* BOTÃO ADICIONAR PRODUTOS */}
 
-        <div className="flex justify-center items-center m-10">
+        {modalButtons && <div className="flex justify-center items-center m-10 gap-5 print:hidden">
           <button className="bg-green-300 p-4 border-black border-2 font-bold text-lg" onClick={() => setModal(!modal)}>Adicionar Produtos</button>
-        </div>
+          <button className="bg-green-300 p-4 border-black border-2 font-bold text-lg" onClick={async () => {
+            setModalButtons(false)
+            await window.print()
+            setModalButtons(true)
+          }}>Imprimir</button>
+        </div>}
 
         {/* TABELA DE PRODUTOS */}
 
-        <div className="bg-gray-400 p-2 border-2 border-black border-t-2 grid grid-cols-[60px_320px_60px_95px_80px_50px_50px_50px_70px_auto]">
+        <div className="bg-gray-400 p-2 border-2 print:mt-10 border-black border-t-2 grid grid-cols-[60px_320px_60px_95px_80px_50px_50px_50px_70px_auto]">
           <div className="border-black border-r-2 font-bold whitespace-nowrap text-center">CÓDIGO</div>
           <div className="border-black border-r-2 font-bold whitespace-nowrap text-center">PRODUTO</div>
           <div className="border-black border-r-2 font-bold whitespace-nowrap text-center">PESO</div>
@@ -341,7 +347,7 @@ export default function App() {
           <div className="border-black border-r-2 border-t-0 font-bold whitespace-nowrap text-center">{e.ClassFiscal}</div>
           <div className="border-black border-r-2 border-t-0 font-bold whitespace-nowrap text-center">{e.tributos.ipi}</div>
           <div className="border-black border-r-2 border-t-0 font-bold whitespace-nowrap text-center">{tributoTes(e)}</div>
-          <input className="[] border-black border-r-2 font-bold bg-inherit text-center m-0 webkit-outer-spin-button" type="number" value={e.qtde} onChange={el => {
+          <input className="border-black border-r-2 font-bold bg-inherit text-center m-0 webkit-outer-spin-button" type="number" value={e.qtde} onChange={el => {
             const values = [...carrinho]
             if (Number(el.target.value) <= 0 || null) {
               if (window.confirm(`Deseja Remover "${e.produto}"?`)) {
