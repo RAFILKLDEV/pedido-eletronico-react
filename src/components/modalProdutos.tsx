@@ -83,7 +83,7 @@ export function ModalProdutos({ carrinho, setCarrinho, modal, setModal }: { carr
     return <div className=" flex flex-col z-10 absolute min-h-screen w-full top-0 left-0 bg-yellow-600 p-10 gap-12">
         <div className="w-full flex items-center justify-center gap-4">
             {familias.map((e, idx) => {
-                return <div key={e.nome} onClick={() => habilitarFiltro(idx)} className="h-52 w-80 border-black border-2 p-2 flex flex-col gap-1 items-center justify-center cursor-pointer">
+                return <div key={e.nome} style={{ backgroundColor: filter == e.nome ? "green" : "white" }} onClick={() => habilitarFiltro(idx)} className="h-52 w-80 border-black border-2 p-2 flex flex-col gap-1 items-center justify-center cursor-pointer">
                     <img className="w-64 h-20" src={e.img} />
                     <div>{e.nome}</div>
                 </div>

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { produtoType } from "../types"
 import { Avisar } from "../components/aviso"
 import { ModalProdutos } from "../components/modalProdutos"
@@ -59,24 +59,6 @@ export default function App() {
   const [digitadoPor, setDigitadoPor] = useState("")
   const [observacao, setObservacao] = useState("")
 
-  const [dados, setDados] = useState({
-    NOME: undefined,
-    NUMERO: undefined,
-    CEP: undefined,
-    ["CNAE PRINCIPAL CODIGO"]: undefined,
-    ["RAZAO SOCIAL"]: undefined,
-    COMPLEMENTO: undefined,
-    DDD: undefined,
-    EMAIL: undefined,
-    TELEFONE: undefined,
-    BAIRRO: undefined,
-    MUNICIPIO: undefined,
-    LOGRADOURO: undefined,
-    SETOR: undefined,
-    STATUS: undefined,
-    UF: undefined,
-  })
-
   function validarInput() {
     if (cnpj.length === 14) {
       validarCnpj()
@@ -109,31 +91,31 @@ export default function App() {
   }
 
   function tributoTes(e: produtoType) {
-    if (estado == "SP") {
-      if (tipoVenda == "VENDA") {
-        if (tributacao == "SIMPLES") {
+    if (estado === "SP") {
+      if (tipoVenda === "VENDA") {
+        if (tributacao === "SIMPLES") {
           return e.tributos.vendas.vendaSimples
-        } else if (tributacao == "RPA") {
+        } else if (tributacao === "RPA") {
           return e.tributos.vendas.vendaRpa
         }
-      } else if (tipoVenda == "BONIFICAÇÃO") {
-        if (tributacao == "SIMPLES") {
+      } else if (tipoVenda === "BONIFICAÇÃO") {
+        if (tributacao === "SIMPLES") {
           return e.tributos.bonif.bonifSimples
-        } else if (tributacao == "RPA") {
+        } else if (tributacao === "RPA") {
           return e.tributos.bonif.bonifRpa
         }
       }
     } else {
-      if (tipoVenda == "VENDA") {
-        if (subsTributacao == "SIM") {
+      if (tipoVenda === "VENDA") {
+        if (subsTributacao === "SIM") {
           return e.tributos.vendas.vendaUfST
-        } else if (subsTributacao == "NÃO") {
+        } else if (subsTributacao === "NÃO") {
           return e.tributos.vendas.vendaUf
         }
-      } else if (tipoVenda == "BONIFICAÇÃO") {
-        if (subsTributacao == "SIM") {
+      } else if (tipoVenda === "BONIFICAÇÃO") {
+        if (subsTributacao === "SIM") {
           return e.tributos.bonif.bonifUfST
-        } else if (subsTributacao == "NÃO") {
+        } else if (subsTributacao === "NÃO") {
           return e.tributos.bonif.bonifUf
         }
       }
@@ -143,22 +125,20 @@ export default function App() {
 
   function temST() {
     switch (estado) {
-      case "SP": return "SIM"
-        break;
-      case "DF": return "SIM"
-        break;
-      case "MT": return "SIM"
-        break;
-      case "MG": return "SIM"
-        break;
-      case "PR": return "SIM"
-        break;
-      case "RJ": return "SIM"
-        break;
+      case "SP": return setSubsTributacao("SIM")
+      case "DF": return setSubsTributacao("SIM")
+      case "MT": return setSubsTributacao("SIM")
+      case "MG": return setSubsTributacao("SIM")
+      case "PR": return setSubsTributacao("SIM")
+      case "RJ": return setSubsTributacao("SIM")
     }
 
-    return "NÃO"
+    return setSubsTributacao("NÃO")
   }
+
+  useEffect(() => {
+    temST()
+  }, [estado])
 
   return (
     <>
@@ -192,8 +172,12 @@ export default function App() {
           </div>
           <div className="bg-gray-100 p-2 w-full align-middle border-2 border-black border-t-0 flex gap-2">
             <div className="font-bold">CNPJ:</div>
-            <input className="bg-inherit border-black border-r-2 pr-2 text-center text-blue-950 font-bold" value={cnpj}
-              onChange={e => setCnpj(e.target.value)} onBlur={validarInput} type="number" maxLength={14} />
+            <input className="bg-inherit border-black border-r-2 pr-2 text-center text-blue-950 font-bold" autoFocus value={cnpj}
+              onChange={e => setCnpj(e.target.value)} onBlur={validarInput} onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  validarInput()
+                }
+              }} type="number" maxLength={14} />
             <div className="font-bold whitespace-nowrap">INSCR. ESTADUAL:</div>
             <input className="bg-inherit w-full text-blue-950 font-bold" value={inscEstadual} onChange={e => setInscEstadual(e.target.value)}></input>
           </div>
@@ -205,7 +189,9 @@ export default function App() {
             <div className="font-bold">CIDADE:</div>
             <input className="bg-inherit  border-black border-r-2 pr-2 w-96 whitespace-nowrap text-blue-950 font-bold" value={cidade} onChange={e => setCidade(e.target.value)}></input>
             <div className="font-bold">ESTADO:</div>
-            <input className="bg-inherit w-52 text-blue-950 font-bold" value={estado} onChange={e => setEstado(e.target.value)}></input>
+            <input className="bg-inherit w-52 text-blue-950 font-bold" value={estado} onChange={e => {
+              setEstado(e.target.value)
+            }}></input>
           </div>
 
           <div className="bg-gray-100 p-2 align-middle border-2 border-black border-t-0 flex gap-2 items-baseline">
@@ -231,7 +217,7 @@ export default function App() {
         {/* TRIBUTOS */}
 
         <div className="mt-4 bg-gray-100 w-full p-2 align-middle border-2 border-black border-t-2 flex gap-2 flex-nowrap items-baseline">
-          <div className="font-bold w-auto">Transportadora:</div>
+          <div className="font-bold w-auto">TRANSPORTADORA:</div>
           <input className="bg-inherit border-black border-r-2 pr-2 w-full text-blue-950 font-bold" value={transportadora} onChange={e => setTransportadora(e.target.value)}></input>
           <div className="font-bold w-auto">FRETE:</div>
           <select className="bg-inherit border-black border-r-2 pr-2 text-blue-950 font-bold" value={frete} onChange={e => setFrete(e.target.value)}>
@@ -239,7 +225,7 @@ export default function App() {
             <option>CIF</option>
             <option>FOB</option>
           </select>
-          <div className="font-bold w-auto">Telefone:</div>
+          <div className="font-bold w-auto">TELEFONE:</div>
           <input className="bg-inherit w-full text-blue-950 font-bold" value={telFrete} onChange={e => setTelFrete(e.target.value)}></input>
         </div>
         <div className="flex w-full bg-gray-200">
@@ -250,7 +236,7 @@ export default function App() {
               <option>CRÉDITO EM CONTA</option>
               <option>BOLETO BANCARIO</option>
             </select>
-            <div className="font-bold w-auto whitespace-nowrap">Descontos em %:</div>
+            <div className="font-bold w-auto whitespace-nowrap">DESCONTOS EM %:</div>
             <input className="bg-inherit w-full text-blue-950 font-bold" value={desconto} onChange={e => setDesconto(e.target.value)}></input>
           </div>
         </div>
@@ -280,7 +266,7 @@ export default function App() {
               <option>RPA</option>
             </select>
             <div className="font-bold w-auto whitespace-nowrap">SUBST. TRIBUTÁRIA:</div>
-            <div className="bg-inherit pr-2 w-auto text-blue-950 font-bold">{temST()}</div>
+            <div className="bg-inherit pr-2 w-auto text-blue-950 font-bold">{subsTributacao}</div>
           </div>
         </div>
 
